@@ -27,7 +27,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -81,24 +81,37 @@
   <ItemGroup>
     <Compile Include="Commands\CommandGroup.cs" />
     <Compile Include="Commands\Misc\LOLBAS.cs" />
+    <Compile Include="Commands\Products\MTPuTTYCommand.cs" />
+    <Compile Include="Commands\Products\OneNoteCommand.cs" />
+    <Compile Include="Commands\Windows\SecureBootCommand.cs" />
+    <Compile Include="Commands\Windows\WifiProfileCommand.cs" />
+    <Compile Include="Commands\Windows\WMICommand.cs" />
     <Compile Include="Commands\Products\FileZillaCommand.cs" />
+    <Compile Include="Commands\Products\KeePass.cs" />
     <Compile Include="Commands\Products\McAfeeConfigsCommand.cs" />
     <Compile Include="Commands\Products\McAfeeSiteListCommand.cs" />
     <Compile Include="Commands\Products\OracleSQLDeveloperCommand.cs" />
     <Compile Include="Commands\Products\SuperPuttyCommand.cs" />
+    <Compile Include="Commands\Products\CloudSyncProviderCommand.cs" />
+    <Compile Include="Commands\Windows\OptionalFeaturesCommand.cs" />
+    <Compile Include="Commands\Windows\Certificates.cs" />
+    <Compile Include="Commands\Windows\CertificateThumbprints.cs" />
     <Compile Include="Commands\Windows\HotfixesCommand.cs" />
     <Compile Include="Commands\Windows\MicrosoftUpdatesCommand.cs" />
     <Compile Include="Commands\Windows\SecurityPackagesCredentialsCommand.cs" />
+    <Compile Include="Interop\Ntdll.cs" />
     <Compile Include="Interop\SecBuffer.cs" />
     <Compile Include="Interop\SecBufferDesc.cs" />
     <Compile Include="Commands\Windows\PowerShellHistory.cs" />
     <Compile Include="Commands\Windows\RDPSessionsCommand.cs" />
+    <Compile Include="Interop\Wlanapi.cs" />
+    <Compile Include="Output\Sinks\JsonStringOutputSink.cs" />
     <Compile Include="SeatbeltArgumentParser.cs" />
     <Compile Include="Commands\Browser\ChromiumBookmarksCommand.cs" />
     <Compile Include="Commands\Browser\ChromiumHistoryCommand.cs" />
     <Compile Include="Commands\Browser\FirefoxHistoryCommand.cs" />
     <Compile Include="Commands\Browser\InternetExplorerFavoritesCommand.cs" />
-    <Compile Include="Commands\Browser\InternetExplorerTypedUrlsCommand.cs" />
+    <Compile Include="Commands\Browser\InternetExplorerTypedURLsCommand.cs" />
     <Compile Include="Commands\HostDTO.cs" />
     <Compile Include="Commands\ErrorDTO.cs" />
     <Compile Include="Commands\CommandOutputTypeAttribute.cs" />
@@ -123,6 +136,7 @@
     <Compile Include="Commands\Windows\CredentialGuardCommand.cs" />
     <Compile Include="Commands\Windows\CredEnumCommand.cs" />
     <Compile Include="Commands\Windows\DotNetCommand.cs" />
+    <Compile Include="Commands\Windows\DsRegCmd.cs" />
     <Compile Include="Commands\Windows\EnvironmentPathCommand.cs" />
     <Compile Include="Commands\Windows\EventLogs\ExplicitLogonEvents\ExplicitLogonEventsCommandDTO.cs" />
     <Compile Include="Commands\Windows\EventLogs\ExplicitLogonEvents\ExplicitLogonEventsTextFormatter.cs" />
@@ -182,10 +196,10 @@
     <Compile Include="Commands\Windows\ExplorerRunCommandCommand.cs" />
     <Compile Include="Commands\Windows\RDPSavedConnectionCommand.cs" />
     <Compile Include="Commands\Products\SysmonCommand.cs" />
-    <Compile Include="Commands\Windows\TcpConnectionsCommand.cs" />
+    <Compile Include="Commands\Windows\TCPConnectionsCommand.cs" />
     <Compile Include="Commands\Windows\TokenPrivilegesCommand.cs" />
     <Compile Include="Commands\Windows\UserAccountControlCommand.cs" />
-    <Compile Include="Commands\Windows\UdpConnectionsCommand.cs" />
+    <Compile Include="Commands\Windows\UDPConnectionsCommand.cs" />
     <Compile Include="Commands\Misc\DirectoryListCommand.cs" />
     <Compile Include="Commands\Windows\WindowsDefenderCommand.cs" />
     <Compile Include="Commands\Windows\WindowsEventForwardingCommand.cs" />

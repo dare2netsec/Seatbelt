@@ -215,7 +215,7 @@ namespace Seatbelt
                 //    pw,
                 //    SessionAuthentication.Default); // TODO password specification! https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.eventing.reader.eventlogsession.-ctor?view=dotnet-plat-ext-3.1#System_Diagnostics_Eventing_Reader_EventLogSession__ctor_System_String_System_String_System_String_System_Security_SecureString_System_Diagnostics_Eventing_Reader_SessionAuthentication_
 
-                EventLogSession session = new EventLogSession(ComputerName);
+                var session = new EventLogSession(ComputerName);
                 eventsQuery.Session = session;
             }
 
@@ -227,7 +227,7 @@ namespace Seatbelt
         {
             if (!string.IsNullOrEmpty(ComputerName))
             {
-                string result = "";
+                var result = "";
 
                 var wmiData = this.GetManagementObjectSearcher(@"root\cimv2", $"SELECT VariableValue from win32_environment WHERE name='{variableName}' AND UserName='<SYSTEM>'");
 
@@ -311,6 +311,19 @@ namespace Seatbelt
                 return false;
 
             List<CommandBase> toExecute;
+            List<CommandBase> toExclude = new List<CommandBase>();
+
+            foreach (var remainingCommand in Commands) 
+            {
+                if(remainingCommand.StartsWith("-"))
+                {
+                    var foundCommand = AllCommands.FirstOrDefault(c => c.Command.Equals(remainingCommand.Substring(1), StringComparison.InvariantCultureIgnoreCase));
+                    if (foundCommand != null)
+                    {
+                        toExclude.Add(foundCommand);
+                    }
+                }
+            }
 
             switch (command.ToLower())
             {
@@ -334,7 +347,9 @@ namespace Seatbelt
                     break;
             }
 
-            toExecute.ForEach(c =>
+            var commandsFiltered = toExecute.Where(c => !toExclude.Contains(c)).ToList();
+
+            commandsFiltered.ForEach(c =>
             {
                 ExecuteCommand(c, new string[] { });
             });
@@ -378,6 +393,9 @@ namespace Seatbelt
                     // OutputSink.BeginOutput();
                     foreach (var result in results)
                     {
+                        // pass the command version from the command module to the DTO
+                        result.SetCommandVersion(command.CommandVersion);
+
                         OutputSink.WriteOutput(result);
                     }
                     // OutputSink.EndOutput();

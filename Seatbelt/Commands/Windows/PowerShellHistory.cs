@@ -1,12 +1,8 @@
-﻿#nullable disable
-using static Seatbelt.Interop.Netapi32;
+﻿using System;
 using System.Collections.Generic;
-using Seatbelt.Output.TextWriters;
-using Seatbelt.Output.Formatters;
-using System;
 using System.IO;
-using Seatbelt.Util;
 using System.Text.RegularExpressions;
+using Seatbelt.Util;
 
 namespace Seatbelt.Commands.Windows
 {
@@ -29,6 +25,14 @@ namespace Seatbelt.Commands.Windows
             // get our "sensitive" cmdline regexes from a common helper function.
             var powershellRegex = MiscUtil.GetProcessCmdLineRegex();
 
+            var context = 3; // number of lines around the match to display
+
+            if (args.Length >= 1)
+            {
+                var allArgs = String.Join(" ", args);
+                powershellRegex = new[] { new Regex(allArgs, RegexOptions.IgnoreCase & RegexOptions.Multiline) };
+            }
+
             var dirs = ThisRunTime.GetDirectories("\\Users\\");
 
             foreach (var dir in dirs)
@@ -42,26 +46,57 @@ namespace Seatbelt.Commands.Windows
                 }
 
                 var consoleHistoryPath = $"{dir}\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadline\\ConsoleHost_history.txt";
-                
-                if (File.Exists(consoleHistoryPath))
+
+                if (!File.Exists(consoleHistoryPath)) 
+                    continue;
+
+                var content = File.ReadAllText(consoleHistoryPath);
+
+                foreach (var reg in powershellRegex)
                 {
-                    string content = System.IO.File.ReadAllText(consoleHistoryPath);
+                    var m = reg.Match(content);
+                    if (!m.Success)
+                        continue;
 
-                    foreach (var reg in powershellRegex)
+                    var contextLines = new List<string>();
+
+                    var scriptBlockParts = content.Split('\n');
+                    for (var i = 0; i < scriptBlockParts.Length; i++)
                     {
-                        var matches = reg.Matches(content);
-                        foreach(Match match in matches)
-                        {
-                            string context = content.Substring(match.Index - 100, 200 + match.Length);
+                        if (!scriptBlockParts[i].Contains(m.Value))
+                            continue;
 
-                            yield return new PowerShellHistoryDTO(
-                                userName,
-                                consoleHistoryPath,
-                                match.ToString(),
-                                context
-                            );
+                        var printed = 0;
+                        for (var j = 1; i - j > 0 && printed < context; j++)
+                        {
+                            if (scriptBlockParts[i - j].Trim() == "")
+                                continue;
+
+                            contextLines.Add(scriptBlockParts[i - j].Trim());
+                            printed++;
                         }
+
+                        printed = 0;
+                        contextLines.Add(m.Value.Trim());
+                        for (var j = 1; printed < context && i + j < scriptBlockParts.Length; j++)
+                        {
+                            if (scriptBlockParts[i + j].Trim() == "")
+                                continue;
+
+                            contextLines.Add(scriptBlockParts[i + j].Trim());
+                            printed++;
+                        }
+                        break;
                     }
+
+                    var contextJoined = string.Join("\n", contextLines.ToArray());
+
+                    yield return new PowerShellHistoryDTO(
+                        userName,
+                        consoleHistoryPath,
+                        m.Value,
+                        contextJoined
+                    );
                 }
             }
         }
@@ -83,4 +118,3 @@ namespace Seatbelt.Commands.Windows
         }
     }
 }
-#nullable enable
